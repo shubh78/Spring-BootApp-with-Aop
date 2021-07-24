@@ -13,8 +13,6 @@ public interface EmployeeService {
 
 	public EmployeeDTO createEmployee(EmployeeDTO employee);
 
-	public void updateEmployee(Long employeeId, EmployeeDTO employeeDetails) throws ResourceNotFoundException;
-
 	public void deleteEmployee(Long employeeId) throws ResourceNotFoundException;
 
 }

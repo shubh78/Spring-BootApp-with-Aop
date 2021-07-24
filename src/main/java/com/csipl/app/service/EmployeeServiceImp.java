@@ -1,7 +1,6 @@
 package com.csipl.app.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,7 +13,6 @@ import com.csipl.app.repository.EmployeeRepository;
 
 /**
  * Employee Service
- * 
  * @author shubham yaduwanshi
  *
  */
@@ -23,8 +21,23 @@ public class EmployeeServiceImp implements EmployeeService {
 	@Autowired
 	private EmployeeRepository employeeRepository;
 
+	@Autowired
 	private EmployeeAdaptor employeeAdaptor;
 
+	
+	@Override
+	public EmployeeDTO createEmployee(EmployeeDTO employeeDto) {
+		return employeeAdaptor
+				.databaseModelToUiDto(employeeRepository.save(employeeAdaptor.uiDtoToDatabaseModel(employeeDto)));
+	}
+	
+	@Override
+	public EmployeeDTO getEmployeeById(Long employeeId) throws ResourceNotFoundException {
+		Employee employee = employeeRepository.findById(employeeId).orElseThrow(
+				() -> new ResourceNotFoundException("Employee not found for  employeeId :: " + employeeId));
+		return employeeAdaptor.databaseModelToUiDto(employee);
+	}
+	
 	@Override
 	public List<EmployeeDTO> getAllEmployees() {
 		List<Employee> employeeList = (List<Employee>) employeeRepository.findAll();
@@ -32,28 +45,9 @@ public class EmployeeServiceImp implements EmployeeService {
 	}
 
 	@Override
-	public EmployeeDTO getEmployeeById(Long employeeId) throws ResourceNotFoundException {
-		Optional<Employee> employee = employeeRepository.findById(employeeId);
-		Employee emp = employeeRepository.findById(employeeId).isPresent() == true ? employee.get() : null;
-		return employeeAdaptor.databaseModelToUiDto(emp);
-	}
-
-	@Override
-	public EmployeeDTO createEmployee(EmployeeDTO employeeDto) {
-		return employeeAdaptor
-				.databaseModelToUiDto(employeeRepository.save(employeeAdaptor.uiDtoToDatabaseModel(employeeDto)));
-	}
-
-	@Override
-	public void updateEmployee(Long employeeId, EmployeeDTO employeeDetails) throws ResourceNotFoundException {
-		employeeRepository.findById(employeeId).orElseThrow(
-				() -> new ResourceNotFoundException("Employee not found for  employeeId :: " + employeeId));
-	}
-
-	@Override
 	public void deleteEmployee(Long employeeId) throws ResourceNotFoundException {
-		try {
-			employeeRepository.deleteById(employeeId);
+		try {		
+		employeeRepository.deleteById(employeeId);
 		} catch (Exception e) {
 			throw new ResourceNotFoundException("Employee not found for  employeeId :: " + employeeId);
 		}

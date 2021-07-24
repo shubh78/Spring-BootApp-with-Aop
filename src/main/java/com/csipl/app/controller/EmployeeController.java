@@ -26,7 +26,7 @@ import com.csipl.app.service.EmployeeService;
  *
  */
 @RestController
-@RequestMapping(value = "/api")
+@RequestMapping(value = "/employee")
 public class EmployeeController {
 
 	@Autowired
@@ -34,49 +34,36 @@ public class EmployeeController {
 
 	/**
 	 * 
+	 * @param employee
 	 * @return
 	 */
-	@GetMapping("/employees")
-	public List<EmployeeDTO> getAllEmployees() {
-		return employeeService.getAllEmployees();
+	@PostMapping("/save")
+	public EmployeeDTO createEmployee(@Validated @RequestBody EmployeeDTO employee) {
+		return employeeService.createEmployee(employee);
 	}
-
+	
 	/**
 	 * 
 	 * @param employeeId
 	 * @return
 	 * @throws ResourceNotFoundException
 	 */
-	@GetMapping("/employees/{id}")
+	@GetMapping("/{id}")
 	public ResponseEntity<EmployeeDTO> getEmployeeById(@PathVariable(value = "id") Long employeeId)
 			throws ResourceNotFoundException {
 		EmployeeDTO employee = employeeService.getEmployeeById(employeeId);
 		return ResponseEntity.ok().body(employee);
 	}
-
+	
 	/**
 	 * 
-	 * @param employee
 	 * @return
 	 */
-	@PostMapping("/employees")
-	public EmployeeDTO createEmployee(@Validated @RequestBody EmployeeDTO employee) {
-		return employeeService.createEmployee(employee);
+	@GetMapping("/all")
+	public List<EmployeeDTO> getAllEmployees() {
+		return employeeService.getAllEmployees();
 	}
 
-	/**
-	 * 
-	 * @param employeeId
-	 * @param employeeDetails
-	 * @return
-	 * @throws ResourceNotFoundException
-	 */
-	@PutMapping("/employees/{id}")
-	public ResponseEntity<EmployeeDTO> updateEmployee(@PathVariable(value = "id") Long employeeId,
-			@Validated @RequestBody EmployeeDTO employeeDetails) throws ResourceNotFoundException {
-		employeeService.updateEmployee(employeeId, employeeDetails);
-		return ResponseEntity.ok().body(null);
-	}
 
 	/**
 	 * 
@@ -84,15 +71,8 @@ public class EmployeeController {
 	 * @return
 	 * @throws ResourceNotFoundException
 	 */
-	@DeleteMapping("/employees/{id}")
+	@DeleteMapping("/delete/{id}")
 	public void deleteEmployee(@PathVariable(value = "id") Long employeeId) throws ResourceNotFoundException {
 		employeeService.deleteEmployee(employeeId);
-	}
-
-	@GetMapping("/exception/{id}")
-	public ResponseEntity<AppStatusEnum[]> getAdviceException(@PathVariable(value = "id") Long employeeId) {
-		if (employeeId > 0)
-			throw new NullPointerException();
-		return ResponseEntity.ok().body(AppStatusEnum.values());
 	}
 }
